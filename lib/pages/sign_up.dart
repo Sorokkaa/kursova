@@ -14,8 +14,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // Стан для видимості пароля
   bool _obscurePassword = true;
 
   @override
@@ -40,7 +38,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               const SizedBox(height: 24.0),
-              // Name field
               TextFormField(
                 controller: _nameController,
                 validator: (value) {
@@ -55,7 +52,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              // Email field
               TextFormField(
                 controller: _emailController,
                 validator: (value) {
@@ -76,10 +72,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              // Password field with show/hide functionality
               TextFormField(
                 controller: _passwordController,
-                obscureText: _obscurePassword, // Це визначає видимість пароля
+                obscureText: _obscurePassword,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Заповніть поле 'Password'";
@@ -95,8 +90,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
-                          ? Icons.visibility // Іконка для приховування
-                          : Icons.visibility_off, // Іконка для показу
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
@@ -107,7 +102,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              // Sign up button
               Center(
                 child: SizedBox(
                   width: double.infinity,
@@ -116,14 +110,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       onPressed: () async {
                         if (_formKey.currentState?.validate() == true) {
                           try {
-                            // Реєстрація користувача
                             UserCredential userCredential = await FirebaseAuth.instance
                                 .createUserWithEmailAndPassword(
                               email: _emailController.text,
                               password: _passwordController.text,
                             );
 
-                            // Додавання додаткових даних у Firestore
                             await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
                               'name': _nameController.text,
                               'email': _emailController.text,
@@ -131,20 +123,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               'created_at': FieldValue.serverTimestamp(),
                             });
 
-                            // Показати повідомлення про успішну реєстрацію
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Sign up successfully!')),
                             );
 
-                            // Переходимо на головний екран після затримки
-                            Future.delayed(const Duration(seconds: 2), () {
+                            Future.delayed(const Duration(seconds: 1), () {
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => ExpensesListScreen()), // Заміна на ваш головний екран
+                                MaterialPageRoute(builder: (context) => ExpensesListScreen()),
                               );
                             });
                           } catch (e) {
-                            // Помилка при реєстрації
                             showDialog(
                               context: context,
                               builder: (BuildContext ctx) {
@@ -169,7 +158,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   height: 48,
                   child: OutlinedButton(
                     onPressed: () {
-                      Navigator.pop(context);  // Повернення назад до сторінки входу
+                      Navigator.pop(context);
                     },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.grey),

@@ -13,8 +13,6 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // Стан для видимості пароля
   bool _obscurePassword = true;
 
   @override
@@ -39,7 +37,6 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               const SizedBox(height: 24.0),
-              // Email field
               TextFormField(
                 controller: _emailController,
                 validator: (value) {
@@ -60,10 +57,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              // Password field with show/hide functionality
               TextFormField(
                 controller: _passwordController,
-                obscureText: _obscurePassword, // Це визначає видимість пароля
+                obscureText: _obscurePassword,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Заповніть поле 'Password'";
@@ -79,8 +75,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
-                          ? Icons.visibility // Іконка для приховування
-                          : Icons.visibility_off, // Іконка для показу
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
@@ -91,7 +87,6 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              // Login button
               Center(
                 child: SizedBox(
                   width: double.infinity,
@@ -100,25 +95,21 @@ class _SignInScreenState extends State<SignInScreen> {
                     onPressed: () async {
                       if (_formKey.currentState?.validate() == true) {
                         try {
-                          // Вхід користувача за допомогою електронної пошти та пароля
                           UserCredential userCredential = await FirebaseAuth.instance
                               .signInWithEmailAndPassword(
                             email: _emailController.text,
                             password: _passwordController.text,
                           );
 
-                          // Перевірка, чи успішний вхід
                           if (userCredential.user != null) {
-                            // Перехід на головний екран
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ExpensesListScreen(), // замініть на ваш головний екран
+                                builder: (context) => ExpensesListScreen(),
                               ),
                             );
                           }
                         } on FirebaseAuthException catch (e) {
-                          // Якщо сталася помилка при вході
                           String message = 'An error occurred. Please try again.';
                           if (e.code == 'user-not-found') {
                             message = 'No user found for that email.';

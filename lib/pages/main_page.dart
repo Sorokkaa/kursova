@@ -24,7 +24,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   Future<void> _getUserData() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      // Завантаження даних користувача
       DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         setState(() {
@@ -33,7 +32,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
         });
       }
 
-      // Завантаження витрат
       QuerySnapshot expenseSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -43,7 +41,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       setState(() {
         expenses = expenseSnapshot.docs.map((doc) {
           final data = doc.data() as Map<String, dynamic>;
-          data['id'] = doc.id; // Збереження ID документа
+          data['id'] = doc.id;
           return data;
         }).toList();
       });
@@ -166,25 +164,20 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        // Отримання колекції витрат
         final expensesCollection = FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
             .collection('expenses');
 
-        // Видалення всіх документів у колекції expenses
         final expensesSnapshot = await expensesCollection.get();
         for (var doc in expensesSnapshot.docs) {
           await doc.reference.delete();
         }
 
-        // Видалення документа користувача
         await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
 
-        // Видалення акаунту
         await user.delete();
 
-        // Перехід на екран входу
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignInScreen()),
@@ -252,7 +245,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.app_registration, color: Colors.deepPurple),
+              leading: Icon(Icons.login, color: Colors.deepPurple),
               title: Text('Вийти з аккаунту', style: TextStyle(fontSize: 16)),
               onTap: () {
                 Navigator.push(
@@ -334,8 +327,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       ),
     );
   }
-
-  // Функція для показу діалогу підтвердження видалення акаунту
   void _showDeleteAccountDialog() {
     showDialog(
       context: context,
